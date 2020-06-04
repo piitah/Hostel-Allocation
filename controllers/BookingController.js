@@ -46,10 +46,7 @@ exports.createBooking = async (req,res) => {
             const updateStudent = await User.User.findByIdAndUpdate(
                 {_id : req.user.id},
                 {$set : {
-                    bed : updateBed._id,
-                    guardian_No: req.body.guardian_No,
-                    guardian_Name: req.body.guardian_Name,
-                    contact_No : req.body.contact_No
+                    bed : updateBed._id
                 }},
                 {new: true}
             )
