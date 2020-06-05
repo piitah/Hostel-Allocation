@@ -140,6 +140,7 @@ exports.Login =  async (req, res) => {
 exports.getAuthUser = async (req, res) => {
     try {
         const user = await User.User.find({_id : req.user.id})
+            .populate('bed')
         
         if(!user) {
             return res.send({
@@ -261,6 +262,45 @@ exports.getUser = async (req,res)=> {
         }
         res.status(200).send({
             payload: user,
+        })
+    } catch (error) {
+        return res.status(400).send({
+            error : "Something went wrong"
+        })
+    }
+}
+exports.searchController = async (req, res) => {
+    try {
+        const searchQuery = req.query.search
+        let user = null
+        if(searchQuery) {
+            user = await User.User.find({
+                $or: [
+                    {name: new RegExp(searchQuery, 'i')},           
+                ]
+            }).populate('bed')
+            console.log(searchQuery)
+            if(!user) {
+                return res.send({
+                    error: "user not found"
+                })
+            }
+        } else {
+            user = await User.User.find({
+                $or: [
+                    {role: {$eq:"User"}},
+                    {role: {$eq:"Agent"}}
+                ]
+            }).populate("bed")
+            if(!user) {
+                return res.send({
+                    error: "user is Empty"
+                })
+            }
+
+        }
+        return res.status(200).send({
+            payload : user
         })
     } catch (error) {
         return res.status(400).send({

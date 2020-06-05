@@ -10,6 +10,7 @@ router.get("/user/getAuthUser", verify.auth, userController.getAuthUser)
 router.get("/user/getUser/:id", verify.auth, userController.getUser)
 router.get("/user/getAllUser", verify.auth, userController.getAllUser)
 router.post("/user/edit", verify.auth, userController.editUser)
+router.get("/user/search", verify.auth, userController.searchController)
 router.post("/user/assignRole/:id", verify.auth, userController.assignRole)
 
 module.exports = router

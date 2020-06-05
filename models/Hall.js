@@ -32,7 +32,11 @@ const HallSchema = new Schema ({
         type: Number,
         required: true
     },
-    img: {
+    image: {
+        type: String,
+        required: true
+    },
+    imagePublicId: {
         type: String,
         required: true
     }

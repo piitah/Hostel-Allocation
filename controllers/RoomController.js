@@ -3,6 +3,7 @@ const Hall = require("../models/Hall")
 const Bed = require("../models/Bed")
 const User = require("../models/user")
 const multer = require('multer')
+const { uploadToCloudinary } = require("../utils")
 
 let storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -23,7 +24,7 @@ exports.createHall = async (req,res) => {
             if(err) res.status(400).send({
                 error : "error occured"
             })
-            const {hall_Name,hall_Code,img, room_No, bed_No, fees, location} = req.body;
+            const {hall_Name,hall_Code, room_No, bed_No, fees, location} = req.body;
             
             const room_array = []
             const bed_array = []
@@ -34,18 +35,30 @@ exports.createHall = async (req,res) => {
             for (let i = 0; i < bed_No; i++) {
                 bed_array.push(i)
             }
+            let newHall = {
+                hall_Name : hall_Name,
+                location: location,
+                bed_No: bed_No,
+                room_No: room_No,
+                fees: fees,
+                hall_Code: hall_Code,
+            }
 
-                const newHall = new Hall({
-                    hall_Name : hall_Name,
-                    location: location,
-                    bed_No: bed_No,
-                    room_No: room_No,
-                    fees: fees,
-                    hall_Code: hall_Code,
-                    img: img
-                })
+            if (req.body.img) {
+                const stream = await req.body.img
+                const uploadImage = await uploadToCloudinary(stream)
+                if (!uploadImage.secure_url) {
+                    throw new Error(
+                        "something went wrong while uploading to cloudinary"
+                    )
+                }
+                newHall.image = uploadImage.secure_url;
+                newHall.imagePublicId = uploadImage.public_id
+            }
 
-                await newHall.save(async(err, hall) => {
+                await new Hall({
+                    ...newHall 
+                  }).save(async(err, hall) => {
                     if(err) res.status(400).send({
                         error : "failed here"
                     })
@@ -225,3 +238,56 @@ exports.getDetails = async (req, res) => {
     }
 }
 
+exports.getAuthHostel = async (req, res) => {
+    try {
+        const bed = await Bed.find({studentID : req.user.id})
+            .populate("hallID")
+            .populate("roomID")
+        if(!bed) {
+            return res.status(400).send({
+                error :"Not Found"
+            })
+        }
+        return res.status(200).send({
+            payload : bed
+        })
+    } catch (error) {
+        return res.status(400).send({
+            error : "Something went wrong"
+        })
+    }
+}
+
+exports.searchController = async (req, res) => {
+    try {
+        const searchQuery = req.query.search
+        let hall = null
+        if(searchQuery) {
+            hall = await Hall.find({
+                $or: [
+                    {hall_Name: new RegExp(searchQuery, 'i')},
+                    {location : new RegExp(searchQuery, 'i')}            
+                ]
+            })
+            if(!hall) {
+                return res.send({
+                    error: "Hall Not Found"
+                })
+            }
+        } else {
+            hall = await Hall.find({})
+            if(!hall) {
+                return res.send({
+                    error: "Hall is Empty"
+                })
+            }
+        }
+        return res.status(200).send({
+            payload : hall
+        })
+    } catch (error) {
+        return res.status(400).send({
+            error : "Something went wrong"
+        })
+    }
+}

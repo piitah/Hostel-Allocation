@@ -3,6 +3,9 @@ const bodyParser = require("body-parser")
 const cors = require('cors')
 const mongoose = require('mongoose')
 const path = require('path')
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 // Get all the routes
 const userRoute = require("../routes/user")
@@ -40,9 +43,9 @@ mongoose.connect(mongoDB, {useNewUrlParser: true})
     console.log("error connecting to mongodb")
   })
 
-  app.get("*", (req, res)=> {
-    res.sendFile(path.join(__dirname, "../dist", "index.html"))
-  })
+  // app.get("*", (req, res)=> {
+  //   res.sendFile(path.join(__dirname, "../dist", "index.html"))
+  // })
 
 // Get Mongoose to use the global promise library
 // mongoose.Promise = global.Promise;

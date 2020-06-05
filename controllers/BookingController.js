@@ -34,7 +34,7 @@ exports.createBooking = async (req,res) => {
 
             const updateBed = await Bed.findByIdAndUpdate(
                 {_id: assign._id},
-                {$set: {free: false}},
+                {$set: {free: false, studentID : req.user.id}},
                 {new : true}
             )
             if(!updateBed) {
@@ -149,7 +149,7 @@ exports.cancelBooking = async (req, res) => {
 
         const bed = await Bed.findByIdAndUpdate(
             {_id : user.bed},
-            {$set: {free: true}}
+            {$set: {free: true, studentID: null}}
         )
         if(!bed) {
             return res.status(400).send({
