@@ -43,9 +43,9 @@ mongoose.connect(mongoDB, {useNewUrlParser: true})
     console.log("error connecting to mongodb")
   })
 
-  // app.get("*", (req, res)=> {
-  //   res.sendFile(path.join(__dirname, "../dist", "index.html"))
-  // })
+  app.get("*", (req, res)=> {
+    res.sendFile(path.join(__dirname, "../dist", "index.html"))
+  })
 
 // Get Mongoose to use the global promise library
 // mongoose.Promise = global.Promise;
