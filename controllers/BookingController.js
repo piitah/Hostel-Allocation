@@ -75,65 +75,6 @@ exports.createBooking = async (req,res) => {
     }
 }
 
-exports.deleteBooking = async (req, res) => {
-    try {
-        const booking = await Booking.findByIdAndDelete({_id : req.params.id})
-        if(!booking) res.status(400).send({
-            error : "error occuered while deleting"
-        })
-        const deleteBookingUser = await User.User.findByIdAndUpdate(
-            {_id : booking.userID},
-            {$set : {booking : null}}
-        )
-        if(!deleteBookingUser) {
-            return res.status(400).send({
-                error: "error occured"
-            })
-        }
-        return res.status(200).send({
-            payload : "successfull"
-        })
-        
-    } catch (error) {
-        return res.status(400).send({
-            error : error
-        })
-    }
-}
-exports.editBooking = async (req, res) => {
-    try {
-        upload(req, res, async (err) => {
-            if(err) res.status(400).send({
-                error : "error occured"
-            })
-
-            let editBooking = new Booking({
-                roomID: req.body.roomID,
-                userID: req.user.id
-            })
-            const updateBooking = await Booking.findByIdAndUpdate(
-                {_id : req.params.id},
-                {$set : editBooking},
-                {new : true}
-            )
-            if(!updateBooking)  {
-                return res.status(400).send({
-                    payload : "failed to edit Booking"
-                })
-            }
-            return res.status(200).send({
-                payload: updateBooking,
-                msg: "successfull"
-            })
-        })
-    } catch (error) {
-        return res.status(400).send({
-            errror : error
-        })
-
-    }
-}
-
 exports.cancelBooking = async (req, res) => {
     try {
         const user = await User.User.findByIdAndUpdate(
@@ -212,6 +153,53 @@ exports.getHostelDetail = async (req, res) => {
         return res.status(200).send({
             payload : hall
         })
+    } catch (error) {
+        res.status(404).send({
+            error : "failed"
+        })
+    }
+}
+
+exports.confirmPayment = async (req, res) => {
+    try {
+        const payment = await Bed.findByIdAndUpdate(
+            {_id : req.body.paymentID},
+            {$set: {paid : true}}
+        )
+        if(!payment) {
+            res.status(404).send({
+                error : "not found"
+            })
+        }
+
+        return res.status(200).send({
+            payload: "Payment Successfully Confirmed"
+        })
+
+    } catch (error) {
+        res.status(404).send({
+            error : "failed"
+        })
+    }
+}
+
+exports.searchForConfirmation = async (req, res) => {
+    try {
+        const details = await Bed.find({_id : req.body.paymentID})
+            .populate("studentID")
+            .populate('hallID')
+            .populate("roomID")
+            console.log(req.body.paymentID)
+        if(!details) {
+            res.status(404).send({
+                error : "not found"
+            })
+        }
+
+        return res.status(200).send({
+            payload: details
+        })
+
     } catch (error) {
         res.status(404).send({
             error : "failed"

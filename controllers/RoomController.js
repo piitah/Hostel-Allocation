@@ -41,7 +41,7 @@ exports.createHall = async (req,res) => {
                 bed_No: bed_No,
                 room_No: room_No,
                 fees: fees,
-                hall_Code: hall_Code,
+                hall_Code: hall_Code
             }
 
             if (req.body.img) {
