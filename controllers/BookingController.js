@@ -144,7 +144,12 @@ exports.getFreeHostel = async (req, res) => {
 exports.getHostelDetail = async (req, res) => {
     try {
         const hall = await Hall.find({_id : req.params.id})
-        
+            .populate(
+                {
+                    path: "rooms",
+                    populate: {path: "beds"}
+                }
+            )
         if(!hall) {
             res.status(404).send({
                 error : "not found"

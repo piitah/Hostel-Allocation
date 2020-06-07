@@ -278,7 +278,10 @@ exports.searchController = async (req, res) => {
                 $or: [
                     {name: new RegExp(searchQuery, 'i')},           
                 ]
-            }).populate('bed')
+            }).populate({
+                path: "bed",
+                populate: {path: "hallID"}
+            })
             console.log(searchQuery)
             if(!user) {
                 return res.send({
@@ -291,7 +294,10 @@ exports.searchController = async (req, res) => {
                     {role: {$eq:"User"}},
                     {role: {$eq:"Agent"}}
                 ]
-            }).populate("bed")
+            }).populate({
+                path: "bed",
+                populate: {path: "hallID"}
+            })
             if(!user) {
                 return res.send({
                     error: "user is Empty"
