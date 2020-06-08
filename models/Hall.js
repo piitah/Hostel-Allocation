@@ -29,7 +29,7 @@ const HallSchema = new Schema ({
         required: true
     },
     fees: {
-        type: Number,
+        type: String,
         required: true
     },
     image: {

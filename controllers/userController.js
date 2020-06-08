@@ -140,7 +140,13 @@ exports.Login =  async (req, res) => {
 exports.getAuthUser = async (req, res) => {
     try {
         const user = await User.User.find({_id : req.user.id})
-            .populate('bed')
+            .populate({
+                path: "bed",
+                populate: [
+                    {path : "roomID"},
+                    {path: "hallID"}
+                ]
+            })
         
         if(!user) {
             return res.send({

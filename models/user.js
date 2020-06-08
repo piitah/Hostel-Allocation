@@ -8,7 +8,7 @@ const UserSchema = new Schema ({
         required: true
     },
     matric_no : {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
@@ -45,7 +45,7 @@ const User = mongoose.model('User', UserSchema);
 const validate = (user) => {
     const validateSchema = {
         name: joi.string().required(),
-        matric_no: joi.number().required(),
+        matric_no: joi.string().required(),
         email: joi.string().max(255).required().email(),
         password: joi.string().min(5).max(1024).required()
     }
